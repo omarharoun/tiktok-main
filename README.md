@@ -90,6 +90,5 @@ To resolve this issue, you'll need to follow the provided link in the error mess
 
 There are plenty of features to add, so here is what I would work on next. Feel free to contribute if you are interested.
 
-- Ability to reload profile/feed/chat screens
 - Ability to share posts through messaging
 - For You feed page vs Following feed page

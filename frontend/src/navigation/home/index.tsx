@@ -7,6 +7,7 @@ import FeedNavigation from "../feed";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
 import ChatScreen from "../../screens/chat/list";
 import { useChats } from "../../hooks/useChats";
+import FollowingFeedScreen from "../../screens/followingFeed"; // Import the new screen
 
 export type HomeStackParamList = {
   feed: undefined;
@@ -14,6 +15,7 @@ export type HomeStackParamList = {
   Add: undefined;
   Inbox: undefined;
   Me: { initialUserId: string };
+  Following: undefined; // Add new route
 };
 
 const Tab = createMaterialBottomTabNavigator<HomeStackParamList>();
@@ -32,6 +34,15 @@ export default function HomeScreen() {
         options={{
           tabBarIcon: ({ color }) => (
             <Feather name="home" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Following"
+        component={FollowingFeedScreen} // Add new screen
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Feather name="users" size={24} color={color} />
           ),
         }}
       />

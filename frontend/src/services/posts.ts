@@ -45,6 +45,45 @@ export const getFeed = (): Promise<Post[]> => {
   });
 };
 
+export const getFollowingFeed = (): Promise<Post[]> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const currentUser = FIREBASE_AUTH.currentUser;
+      if (!currentUser) {
+        reject(new Error("User not authenticated"));
+        return;
+      }
+
+      const followingQuery = query(
+        collection(FIREBASE_DB, "user", currentUser.uid, "following")
+      );
+      const followingSnapshot = await getDocs(followingQuery);
+      const followingIds = followingSnapshot.docs.map((doc) => doc.id);
+
+      if (followingIds.length === 0) {
+        resolve([]);
+        return;
+      }
+
+      const postsQuery = query(
+        collection(FIREBASE_DB, "post"),
+        where("creator", "in", followingIds),
+        orderBy("creation", "desc")
+      );
+      const postsSnapshot = await getDocs(postsQuery);
+      const posts = postsSnapshot.docs.map((doc) => {
+        const id = doc.id;
+        const data = doc.data();
+        return { id, ...data } as Post;
+      });
+      resolve(posts);
+    } catch (error) {
+      console.error("Failed to get following feed: ", error);
+      reject(error);
+    }
+  });
+};
+
 /**
  * Gets the like state of a user in a specific post
  * @param {String} postId - id of the post

@@ -2,56 +2,23 @@ import { FlatList, View, Dimensions, ViewToken, RefreshControl } from "react-nat
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
-import { getFeed, getPostsByUserId } from "../../services/posts";
+import { getFollowingFeed } from "../../services/posts"; // New function to fetch following feed
 import { Post } from "../../../types";
-import { RouteProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../navigation/main";
-import { HomeStackParamList } from "../../navigation/home";
-import {
-  CurrentUserProfileItemInViewContext,
-  FeedStackParamList,
-} from "../../navigation/feed";
 import useMaterialNavBarHeight from "../../hooks/useMaterialNavBarHeight";
-
-type FeedScreenRouteProp =
-  | RouteProp<RootStackParamList, "userPosts">
-  | RouteProp<HomeStackParamList, "feed">
-  | RouteProp<FeedStackParamList, "feedList">;
 
 interface PostViewToken extends ViewToken {
   item: Post;
 }
 
-/**
- * Component that renders a list of posts meant to be
- * used for the feed screen.
- *
- * On start make fetch for posts then use a flatList
- * to display/control the posts.
- */
-export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
-  const { setCurrentUserProfileItemInView } = useContext(
-    CurrentUserProfileItemInViewContext,
-  );
-
-  const { creator, profile } = route.params as {
-    creator: string;
-    profile: boolean;
-  };
-
+export default function FollowingFeedScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
 
   const fetchPosts = useCallback(async () => {
-    if (profile && creator) {
-      const posts = await getPostsByUserId(creator);
-      setPosts(posts);
-    } else {
-      const posts = await getFeed();
-      setPosts(posts);
-    }
-  }, [profile, creator]);
+    const posts = await getFollowingFeed();
+    setPosts(posts);
+  }, []);
 
   useEffect(() => {
     fetchPosts();
@@ -63,11 +30,6 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     setRefreshing(false);
   }, [fetchPosts]);
 
-  /**
-   * Called any time a new post is shown when a user scrolls
-   * the FlatList, when this happens we should start playing
-   * the post that is viewable and stop all the others
-   */
   const onViewableItemsChanged = useRef(
     ({ changed }: { changed: PostViewToken[] }) => {
       changed.forEach((element) => {
@@ -75,9 +37,6 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
         if (cell) {
           if (element.isViewable) {
-            if (!profile && setCurrentUserProfileItemInView) {
-              setCurrentUserProfileItemInView(element.item.creator);
-            }
             cell.play();
           } else {
             cell.stop();
@@ -88,14 +47,8 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
   );
 
   const feedItemHeight =
-    Dimensions.get("window").height - useMaterialNavBarHeight(profile);
-  /**
-   * renders the item shown in the FlatList
-   *
-   * @param {Object} item object of the post
-   * @param {Integer} index position of the post in the FlatList
-   * @returns
-   */
+    Dimensions.get("window").height - useMaterialNavBarHeight(false);
+
   const renderItem = ({ item, index }: { item: Post; index: number }) => {
     return (
       <View

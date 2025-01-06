@@ -1,10 +1,10 @@
-import { ScrollView } from "react-native";
+import { ScrollView, RefreshControl } from "react-native";
 import styles from "./styles";
 import ProfileNavBar from "../../components/profile/navBar";
 import ProfileHeader from "../../components/profile/header";
 import ProfilePostList from "../../components/profile/postList";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useCallback } from "react";
 import {
   CurrentUserProfileItemInViewContext,
   FeedStackParamList,
@@ -28,6 +28,7 @@ export default function ProfileScreen({
 }) {
   const { initialUserId } = route.params;
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const providerUserId = useContext(CurrentUserProfileItemInViewContext);
 
@@ -37,13 +38,24 @@ export default function ProfileScreen({
 
   const user = userQuery.data;
 
-  useEffect(() => {
+  const fetchPosts = useCallback(async () => {
     if (!user) {
       return;
     }
 
-    getPostsByUserId(user?.uid).then((posts) => setUserPosts(posts));
+    const posts = await getPostsByUserId(user?.uid);
+    setUserPosts(posts);
   }, [user]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchPosts();
+    setRefreshing(false);
+  }, [fetchPosts]);
 
   if (!user) {
     return <></>;
@@ -52,7 +64,11 @@ export default function ProfileScreen({
   return (
     <SafeAreaView style={styles.container}>
       <ProfileNavBar user={user} />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <ProfileHeader user={user} />
         <ProfilePostList posts={userPosts} />
       </ScrollView>
