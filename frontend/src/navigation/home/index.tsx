@@ -15,7 +15,6 @@ export type HomeStackParamList = {
   Add: undefined;
   Inbox: undefined;
   Me: { initialUserId: string };
-  Following: undefined; // Add new route
 };
 
 const Tab = createMaterialBottomTabNavigator<HomeStackParamList>();
@@ -34,15 +33,6 @@ export default function HomeScreen() {
         options={{
           tabBarIcon: ({ color }) => (
             <Feather name="home" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Following"
-        component={FollowingFeedScreen} // Add new screen
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Feather name="users" size={24} color={color} />
           ),
         }}
       />

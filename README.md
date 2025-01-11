@@ -92,3 +92,4 @@ There are plenty of features to add, so here is what I would work on next. Feel 
 
 - Ability to share posts through messaging
 - For You feed page vs Following feed page
+- camera Could not generate thumbnail error

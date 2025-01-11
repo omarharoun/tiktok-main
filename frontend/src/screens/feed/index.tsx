@@ -1,8 +1,8 @@
-import { FlatList, View, Dimensions, ViewToken, RefreshControl } from "react-native";
+import { FlatList, View, Dimensions, ViewToken, RefreshControl, TouchableOpacity, Text } from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
-import { getFeed, getPostsByUserId } from "../../services/posts";
+import { getFeed, getFollowingFeed, getPostsByUserId } from "../../services/posts";
 import { Post } from "../../../types";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
@@ -41,17 +41,21 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedFeed, setSelectedFeed] = useState<"ForYou" | "Following">("ForYou");
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
 
   const fetchPosts = useCallback(async () => {
     if (profile && creator) {
       const posts = await getPostsByUserId(creator);
       setPosts(posts);
-    } else {
+    } else if (selectedFeed === "ForYou") {
       const posts = await getFeed();
       setPosts(posts);
+    } else {
+      const posts = await getFollowingFeed();
+      setPosts(posts);
     }
-  }, [profile, creator]);
+  }, [profile, creator, selectedFeed]);
 
   useEffect(() => {
     fetchPosts();
@@ -114,6 +118,26 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            selectedFeed === "ForYou" && styles.selectedButton,
+          ]}
+          onPress={() => setSelectedFeed("ForYou")}
+        >
+          <Text style={styles.toggleButtonText}>For You</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            selectedFeed === "Following" && styles.selectedButton,
+          ]}
+          onPress={() => setSelectedFeed("Following")}
+        >
+          <Text style={styles.toggleButtonText}>Following</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={posts}
         windowSize={4}
