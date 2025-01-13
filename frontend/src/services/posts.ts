@@ -200,3 +200,28 @@ export const getPostsByUserId = (
     return () => unsubscribe();
   });
 };
+
+export const deletePost = async (postId: string) => {
+  try {
+    const currentUser = FIREBASE_AUTH.currentUser;
+    if (!currentUser) {
+      throw new Error("User not authenticated");
+    }
+
+    const postDocRef = doc(FIREBASE_DB, "post", postId);
+    const postDoc = await getDoc(postDocRef);
+
+    if (!postDoc.exists()) {
+      throw new Error("Post not found");
+    }
+
+    const postData = postDoc.data();
+    if (postData.creator !== currentUser.uid) {
+      throw new Error("You are not authorized to delete this post");
+    }
+
+    await deleteDoc(postDocRef);
+  } catch (error) {
+    console.error("Error deleting post: ", error);
+  }
+};
