@@ -4,12 +4,12 @@
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/res/mipmap-xxxhdpi/ic_launcher.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#6A3DE8"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,10 +20,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+        "backgroundColor": "#6A3DE8"
       },
-      "package": "com.fares.ihsan"
+      "package": "com.fares.ihsan",
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +34,9 @@
       "eas": {
         "projectId": "84ea72aa-c883-4872-a408-8a377f6a46b4"
       }
-    }
+    },
+    "plugins": [
+      "expo-build-properties"
+    ]
   }
 }
