@@ -1,9 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setChats } from "../redux/slices/chatSlice";
-import { chatsListener } from "../services/chat";
+import { setChats } from "../redux/slices/chatSlicePB";
+import ChatService from "../services/chatPB";
 import { RootState } from "../redux/store";
-import { QuerySnapshot, Unsubscribe } from "firebase/firestore";
 import { Chat } from "../../types";
 
 export const useChats = () => {
@@ -11,24 +10,22 @@ export const useChats = () => {
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
 
   const handleChatsChange = useCallback(
-    (change: QuerySnapshot) => {
-      dispatch(
-        setChats(
-          change.docs.map((item) => ({ id: item.id, ...item.data() }) as Chat),
-        ),
-      );
+    (chats: Chat[]) => {
+      dispatch(setChats(chats));
     },
     [dispatch],
   );
 
   useEffect(() => {
-    let listenerInstance: Unsubscribe | undefined;
+    let unsubscribe: (() => void) | undefined;
     if (currentUser != null) {
-      listenerInstance = chatsListener(handleChatsChange);
+      unsubscribe = ChatService.subscribeToChats(handleChatsChange);
     }
 
     return () => {
-      listenerInstance && listenerInstance();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
-  }, [handleChatsChange, currentUser]);
+  }, [currentUser, handleChatsChange]);
 };

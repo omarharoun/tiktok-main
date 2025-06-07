@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { keys } from "./queryKeys";
-import { getUserById } from "../services/user";
+import UserService from "../services/userPB";
 
 /**
  * hook meant to fetch a user using react-query in order
@@ -18,7 +18,7 @@ export const useUser = (userId: string | null, options = {}) => {
       if (!userId) {
         return null;
       }
-      return getUserById(userId);
+      return UserService.getUserById(userId);
     },
     options,
   );

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { changeFollowState } from "../services/user";
+import { UserService } from "../services/userPB";
 import { keys } from "./queryKeys";
-import { FIREBASE_AUTH } from "../../firebaseConfig";
+import { pb } from "../../pocketbaseConfig";
 
 /**
  * Mutate the state of the follow cache system
@@ -16,19 +16,16 @@ import { FIREBASE_AUTH } from "../../firebaseConfig";
 export const useFollowingMutation = (options = {}) => {
   const queryClient = useQueryClient();
 
-  return useMutation(changeFollowState, {
+  return useMutation(UserService.changeFollowState, {
     ...options,
     onMutate: (variables) => {
-      if (!FIREBASE_AUTH.currentUser?.uid) {
+      if (!pb.authStore.model?.id) {
         console.error("No current user");
         return;
       }
 
       queryClient.setQueryData(
-        keys.userFollowing(
-          FIREBASE_AUTH.currentUser?.uid,
-          variables.otherUserId,
-        ),
+        keys.userFollowing(pb.authStore.model?.id, variables.otherUserId),
         !variables.isFollowing,
       );
     },

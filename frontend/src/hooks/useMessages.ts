@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createChat, messagesListener } from "../services/chat";
+import ChatService from "../services/chatPB";
 import { RootState } from "../redux/store";
-import { QuerySnapshot, Unsubscribe } from "firebase/firestore";
 import { Message } from "../../types";
 
 export const useMessages = (chatId?: string, contactId?: string) => {
@@ -13,38 +12,38 @@ export const useMessages = (chatId?: string, contactId?: string) => {
   const [chatIdInst, setChatIdInst] = useState(chatId);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const handleMessagesChange = useCallback(
-    (change: QuerySnapshot) => {
-      setMessages(
-        change.docs.map((item) => ({ id: item.id, ...item.data() }) as Message),
-      );
-    },
-    [dispatch],
-  );
+  const handleMessagesChange = useCallback((messages: Message[]) => {
+    setMessages(messages);
+  }, []);
 
   useEffect(() => {
-    let listenerInstance: Unsubscribe;
+    let unsubscribe: (() => void) | undefined;
 
     if (!chatIdInst) {
-      let chat = chats.find((item) =>
-        item.members.some((member) => member === contactId),
+      const chat = chats.find((item) =>
+        item.participants.some((member) => member === contactId),
       );
 
       if (!chat && contactId) {
-        createChat(contactId).then((res) => setChatIdInst(res.id));
+        ChatService.createChat(contactId).then((res) => setChatIdInst(res.id));
       } else if (chat) {
         setChatIdInst(chat.id);
       }
     }
 
     if (currentUser != null && chatIdInst) {
-      listenerInstance = messagesListener(handleMessagesChange, chatIdInst);
+      unsubscribe = ChatService.subscribeToMessages(
+        chatIdInst,
+        handleMessagesChange,
+      );
     }
 
     return () => {
-      listenerInstance && listenerInstance();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
-  }, [handleMessagesChange, currentUser, chatIdInst]);
+  }, [handleMessagesChange, currentUser, chatIdInst, chats, contactId]);
 
   return { messages, chatIdInst };
 };

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getIsFollowing } from "../services/user";
+import { UserService } from "../services/userPB";
 import { keys } from "./queryKeys";
 
 /**
@@ -27,7 +27,7 @@ export const useFollowing = (
 
   return useQuery(
     keys.userFollowing(userId, otherUserId),
-    () => getIsFollowing(userId, otherUserId),
+    () => UserService.getIsFollowing(userId, otherUserId),
     options,
   );
 };
