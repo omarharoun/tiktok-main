@@ -32,11 +32,12 @@
     },
     "extra": {
       "eas": {
-        "projectId": "84ea72aa-c883-4872-a408-8a377f6a46b4"
+        "projectId": "37951e3c-9f0d-44ee-a36d-690172839ceb"
       }
     },
     "plugins": [
-      "expo-build-properties"
+      "expo-build-properties",
+      "react-native-compressor"
     ]
   }
 }
