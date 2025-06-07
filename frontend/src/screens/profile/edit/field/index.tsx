@@ -4,7 +4,7 @@ import { View, Text, TextInput } from "react-native";
 import { Divider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NavBarGeneral from "../../../../components/general/navbar";
-import { saveUserField } from "../../../../services/user";
+import { UserService } from "../../../../services/userPB";
 import { generalStyles } from "../../../../styles";
 import styles from "./styles";
 import { RootStackParamList } from "../../../../navigation/main";
@@ -23,7 +23,9 @@ export default function EditProfileFieldScreen({
   const navigation = useNavigation();
 
   const onSave = () => {
-    saveUserField(field, textInputValue).then(() => navigation.goBack());
+    UserService.saveUserField(field, textInputValue).then(() =>
+      navigation.goBack(),
+    );
   };
 
   return (

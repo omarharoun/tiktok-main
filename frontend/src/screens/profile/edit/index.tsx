@@ -5,7 +5,8 @@ import styles from "./styles";
 import NavBarGeneral from "../../../components/general/navbar";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { saveUserProfileImage } from "../../../services/user";
+import { UserService } from "../../../services/userPB";
+import { MediaService } from "../../../services/mediaPB";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { RootState } from "../../../redux/store";
@@ -18,7 +19,7 @@ export default function EditProfileScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const chooseImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
@@ -26,7 +27,8 @@ export default function EditProfileScreen() {
     });
 
     if (!result.canceled) {
-      saveUserProfileImage(result.assets[0].uri);
+      const blob = await MediaService.uriToBlob(result.assets[0].uri);
+      await UserService.saveUserProfileImage(blob);
     }
   };
 
@@ -41,7 +43,7 @@ export default function EditProfileScreen() {
           {auth.currentUser && (
             <Image
               style={styles.image}
-              source={{ uri: auth.currentUser.photoURL }}
+              source={{ uri: auth.currentUser.avatar }}
             />
           )}
           <View style={styles.imageOverlay} />

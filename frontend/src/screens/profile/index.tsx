@@ -5,12 +5,10 @@ import ProfileHeader from "../../components/profile/header";
 import ProfilePostList from "../../components/profile/postList";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useContext, useEffect, useCallback } from "react";
-import {
-  CurrentUserProfileItemInViewContext,
-  FeedStackParamList,
-} from "../../navigation/feed";
+import { CurrentUserProfileItemInViewContext } from "../../contexts/UserProfileContext";
+import { FeedStackParamList } from "../../types/navigation";
 import { useUser } from "../../hooks/useUser";
-import { getPostsByUserId } from "../../services/posts";
+import { PostService } from "../../services/postsPB";
 import { Post } from "../../../types";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
@@ -43,7 +41,7 @@ export default function ProfileScreen({
       return;
     }
 
-    const posts = await getPostsByUserId(user?.uid);
+    const posts = await PostService.getPostsByUserId(user?.id);
     setUserPosts(posts);
   }, [user]);
 

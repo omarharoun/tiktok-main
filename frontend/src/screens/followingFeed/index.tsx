@@ -1,8 +1,14 @@
-import { FlatList, View, Dimensions, ViewToken, RefreshControl } from "react-native";
+import {
+  FlatList,
+  View,
+  Dimensions,
+  ViewToken,
+  RefreshControl,
+} from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
-import { getFollowingFeed } from "../../services/posts"; // New function to fetch following feed
+import { PostService } from "../../services/postsPB"; // New function to fetch following feed
 import { Post } from "../../../types";
 import useMaterialNavBarHeight from "../../hooks/useMaterialNavBarHeight";
 
@@ -16,7 +22,7 @@ export default function FollowingFeedScreen() {
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
 
   const fetchPosts = useCallback(async () => {
-    const posts = await getFollowingFeed();
+    const posts = await PostService.getFollowingFeed();
     setPosts(posts);
   }, []);
 

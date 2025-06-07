@@ -1,11 +1,11 @@
-import { 
-  FlatList, 
-  View, 
-  Dimensions, 
-  ViewToken, 
-  RefreshControl, 
-  TouchableOpacity, 
-  Text 
+import {
+  FlatList,
+  View,
+  Dimensions,
+  ViewToken,
+  RefreshControl,
+  TouchableOpacity,
+  Text,
 } from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
@@ -13,12 +13,11 @@ import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import { RouteProp, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
 import { HomeStackParamList } from "../../navigation/home";
-import { 
-  CurrentUserProfileItemInViewContext, 
-  FeedStackParamList 
-} from "../../navigation/feed";
+import { CurrentUserProfileItemInViewContext } from "../../contexts/UserProfileContext";
+import { FeedStackParamList } from "../../types/navigation";
 import useMaterialNavBarHeight from "../../hooks/useMaterialNavBarHeight";
 import { usePosts } from "../../hooks/usePosts";
+import { Post } from "../../../types";
 
 type FeedScreenRouteProp =
   | RouteProp<RootStackParamList, "userPosts">
@@ -39,10 +38,16 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     profile: boolean;
   };
 
-  const [selectedFeed, setSelectedFeed] = useState<"ForYou" | "Following">("ForYou");
+  const [selectedFeed, setSelectedFeed] = useState<"ForYou" | "Following">(
+    "ForYou",
+  );
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
 
-  const { data: posts = [], refetch, isFetching } = usePosts(profile, creator, selectedFeed);
+  const {
+    data: posts = [],
+    refetch,
+    isFetching,
+  } = usePosts(profile, creator, selectedFeed);
 
   const onRefresh = useCallback(async () => {
     await refetch();
@@ -71,7 +76,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
       return () => {
         Object.values(mediaRefs.current).forEach((ref) => ref?.stop());
       };
-    }, [])
+    }, []),
   );
 
   const feedItemHeight =
@@ -97,13 +102,19 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     <View style={styles.container}>
       <View style={styles.toggleContainer}>
         <TouchableOpacity
-          style={[styles.toggleButton, selectedFeed === "ForYou" && styles.selectedButton]}
+          style={[
+            styles.toggleButton,
+            selectedFeed === "ForYou" && styles.selectedButton,
+          ]}
           onPress={() => setSelectedFeed("ForYou")}
         >
           <Text style={styles.toggleButtonText}>For You</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.toggleButton, selectedFeed === "Following" && styles.selectedButton]}
+          style={[
+            styles.toggleButton,
+            selectedFeed === "Following" && styles.selectedButton,
+          ]}
           onPress={() => setSelectedFeed("Following")}
         >
           <Text style={styles.toggleButtonText}>Following</Text>
@@ -125,7 +136,9 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
         onViewableItemsChanged={onViewableItemsChanged.current}
         snapToInterval={feedItemHeight}
         snapToAlignment="start"
-        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />
+        }
       />
     </View>
   );
