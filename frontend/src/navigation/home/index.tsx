@@ -4,7 +4,7 @@ import CameraScreen from "../../screens/camera";
 import ProfileScreen from "../../screens/profile";
 import SearchScreen from "../../screens/search";
 import FeedNavigation from "../feed";
-import { FIREBASE_AUTH } from "../../../firebaseConfig";
+import { pb } from "../../../pocketbaseConfig";
 import ChatScreen from "../../screens/chat/list";
 import { useChats } from "../../hooks/useChats";
 import FollowingFeedScreen from "../../screens/followingFeed"; // Import the new screen
@@ -71,7 +71,7 @@ export default function HomeScreen() {
             <Feather name="user" size={24} color={color} />
           ),
         }}
-        initialParams={{ initialUserId: FIREBASE_AUTH.currentUser?.uid ?? "" }}
+        initialParams={{ initialUserId: pb.authStore.model?.id ?? "" }}
       />
     </Tab.Navigator>
   );

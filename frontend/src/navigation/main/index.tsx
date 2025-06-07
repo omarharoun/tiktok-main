@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { userAuthStateListener } from "../../redux/slices/authSlice"; // Make sure the path is correct
+import { userAuthStateListener } from "../../redux/slices/authSlicePB";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AuthScreen from "../../screens/auth";
 import { AppDispatch, RootState } from "../../redux/store";
 import HomeScreen from "../home";
-import { View } from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import SavePostScreen from "../../screens/savePost";
 import EditProfileScreen from "../../screens/profile/edit";
 import EditProfileFieldScreen from "../../screens/profile/edit/field";
@@ -34,11 +34,22 @@ export default function Route() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    console.log("Starting auth state listener...");
     dispatch(userAuthStateListener());
   }, [dispatch]);
 
+  console.log("Auth state:", {
+    loaded: currentUserObj.loaded,
+    currentUser: currentUserObj.currentUser,
+  });
+
   if (!currentUserObj.loaded) {
-    return <View></View>;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
   }
 
   return (
@@ -94,3 +105,17 @@ export default function Route() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#333",
+  },
+});
