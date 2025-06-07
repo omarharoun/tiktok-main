@@ -5,7 +5,7 @@ import styles from "./styles";
 import { Post, User } from "../../../../../types";
 import { useDispatch, useSelector } from "react-redux";
 import { throttle } from "throttle-debounce";
-import { getLikeById, updateLike } from "../../../../services/posts";
+import { PostService } from "../../../../services/postsPB";
 import { AppDispatch, RootState } from "../../../../redux/store";
 import { openCommentModal } from "../../../../redux/slices/modalSlice";
 import { useNavigation } from "@react-navigation/native";
@@ -43,7 +43,7 @@ export default function PostSingleOverlay({
 
   useEffect(() => {
     if (currentUser) {
-      getLikeById(post.id, currentUser.uid).then((res) => {
+      PostService.getLikeById(post.id, currentUser.id).then((res) => {
         setCurrentLikeState({
           ...currentLikeState,
           state: res,
@@ -69,7 +69,11 @@ export default function PostSingleOverlay({
             (currentLikeStateInst.state ? -1 : 1),
         });
         if (currentUser) {
-          updateLike(post.id, currentUser.uid, currentLikeStateInst.state);
+          PostService.updateLike(
+            post.id,
+            currentUser.id,
+            currentLikeStateInst.state,
+          );
         }
       }),
     [],
@@ -89,12 +93,12 @@ export default function PostSingleOverlay({
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("profileOther", {
-              initialUserId: user?.uid ?? "",
+              initialUserId: user?.id ?? "",
             })
           }
         >
-          {user.photoURL ? (
-            <Image style={styles.avatar} source={{ uri: user.photoURL }} />
+          {user.avatar ? (
+            <Image style={styles.avatar} source={{ uri: user.avatar }} />
           ) : (
             <Avatar.Icon
               style={styles.defaultAvatar}

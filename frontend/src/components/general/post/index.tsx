@@ -4,6 +4,7 @@ import styles from "./styles";
 import { Post } from "../../../../types";
 import { useUser } from "../../../hooks/useUser";
 import PostSingleOverlay from "./overlay";
+import { MediaService } from "../../../services/mediaPB";
 
 export interface PostSingleHandles {
   play: () => Promise<void>;
@@ -22,6 +23,22 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
   ({ item }, parentRef) => {
     const ref = useRef<Video>(null);
     const user = useUser(item.creator).data;
+
+    // Generate full URLs for media files
+    const videoUrl =
+      item.media && item.media[0]
+        ? MediaService.getFileUrl(item, item.media[0])
+        : "";
+    const thumbnailUrl =
+      item.media && item.media[1]
+        ? MediaService.getFileUrl(item, item.media[1])
+        : "";
+
+    console.log("Post media URLs:", {
+      videoUrl,
+      thumbnailUrl,
+      media: item.media,
+    });
 
     useImperativeHandle(parentRef, () => ({
       play,
@@ -111,10 +128,10 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
           shouldPlay={false}
           isLooping
           usePoster
-          posterSource={{ uri: item.media[1] }}
+          posterSource={{ uri: thumbnailUrl }}
           posterStyle={{ resizeMode: "cover", height: "100%" }}
           source={{
-            uri: item.media[0],
+            uri: videoUrl,
           }}
         />
       </>

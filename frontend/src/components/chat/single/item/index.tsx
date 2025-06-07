@@ -3,28 +3,28 @@ import { View, Text, Image } from "react-native";
 import { useUser } from "../../../../hooks/useUser";
 import { generalStyles } from "../../../../styles";
 import styles from "./styles";
-import { FIREBASE_AUTH } from "../../../../../firebaseConfig";
+import { pb } from "../../../../../pocketbaseConfig";
 import { Message } from "../../../../../types";
 import { Avatar } from "react-native-paper";
 
 const ChatSingleItem = ({ item }: { item: Message }) => {
-  const { data: userData, isLoading } = useUser(item.creator);
+  const { data: userData, isLoading } = useUser(item.sender);
 
   if (isLoading) {
     return <></>;
   }
 
   const isCurrentUser =
-    FIREBASE_AUTH.currentUser && item.creator === FIREBASE_AUTH.currentUser.uid;
+    pb.authStore.model && item.sender === pb.authStore.model.id;
 
   return (
     <View
       style={isCurrentUser ? styles.containerCurrent : styles.containerOther}
     >
-      {userData && userData.photoURL ? (
+      {userData && userData.avatar ? (
         <Image
           style={generalStyles.avatarSmall}
-          source={{ uri: userData.photoURL }}
+          source={{ uri: userData.avatar }}
         />
       ) : (
         <Avatar.Icon size={32} icon={"account"} />
@@ -36,7 +36,7 @@ const ChatSingleItem = ({ item }: { item: Message }) => {
             : styles.containerTextOther
         }
       >
-        <Text style={styles.text}>{item.message}</Text>
+        <Text style={styles.text}>{item.content}</Text>
       </View>
     </View>
   );

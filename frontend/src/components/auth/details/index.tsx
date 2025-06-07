@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
-import { login, register } from "../../../redux/slices/authSlice";
+import { login, register } from "../../../redux/slices/authSlicePB";
 import { AppDispatch } from "../../../redux/store";
 
 export interface AuthDetailsProps {

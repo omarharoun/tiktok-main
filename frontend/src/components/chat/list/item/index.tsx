@@ -3,7 +3,7 @@ import React from "react";
 import { useUser } from "../../../../hooks/useUser";
 import styles from "./styles";
 import { useNavigation } from "@react-navigation/native";
-import { FIREBASE_AUTH } from "../../../../../firebaseConfig";
+import { pb } from "../../../../../pocketbaseConfig";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";
 import { Chat } from "../../../../../types";
@@ -13,10 +13,9 @@ const ChatListItem = ({ chat }: { chat: Chat }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: userData } = useUser(
-    FIREBASE_AUTH.currentUser &&
-      chat.members[0] === FIREBASE_AUTH.currentUser.uid
-      ? chat.members[1]
-      : chat.members[0],
+    pb.authStore.model && chat.participants[0] === pb.authStore.model.id
+      ? chat.participants[1]
+      : chat.participants[0],
   );
 
   return (
@@ -24,8 +23,8 @@ const ChatListItem = ({ chat }: { chat: Chat }) => {
       style={styles.container}
       onPress={() => navigation.navigate("chatSingle", { chatId: chat.id })}
     >
-      {userData && userData.photoURL ? (
-        <Image style={styles.image} source={{ uri: userData.photoURL }} />
+      {userData && userData.avatar ? (
+        <Image style={styles.image} source={{ uri: userData.avatar }} />
       ) : (
         <Avatar.Icon size={60} icon={"account"} />
       )}
@@ -35,15 +34,11 @@ const ChatListItem = ({ chat }: { chat: Chat }) => {
             {userData.displayName || userData.email}
           </Text>
         )}
-        <Text style={styles.lastMessage}>{chat.lastMessage}</Text>
+        <Text style={styles.lastMessage}>Last activity</Text>
       </View>
       <Text>
-        {chat.lastUpdate && chat.lastUpdate.seconds
-          ? `${
-              new Date(chat.lastUpdate.seconds * 1000).getMonth() + 1
-            }/${new Date(chat.lastUpdate.seconds * 1000).getDate()}/${new Date(
-              chat.lastUpdate.seconds * 1000,
-            ).getFullYear()}`
+        {chat.lastActivity
+          ? new Date(chat.lastActivity).toLocaleDateString()
           : "Now"}
       </Text>
     </TouchableOpacity>
