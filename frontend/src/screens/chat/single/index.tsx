@@ -6,7 +6,7 @@ import ChatSingleItem from "../../../components/chat/single/item";
 import { useMessages } from "../../../hooks/useMessages";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NavBarGeneral from "../../../components/general/navbar";
-import { sendMessage } from "../../../services/chat";
+import { ChatService } from "../../../services/chatPB";
 import { RootStackParamList } from "../../../navigation/main";
 import { RouteProp } from "@react-navigation/native";
 import { Message } from "../../../../types";
@@ -27,7 +27,7 @@ const ChatSingleScreen = ({
     }
 
     setMessage("");
-    sendMessage(chatIdInst, message);
+    ChatService.sendMessage(chatIdInst, message);
   };
 
   const renderItem = ({ item }: { item: Message }) => {

@@ -73,7 +73,7 @@ export default function CameraScreen() {
         if (videoRecordPromise) {
           const data = await videoRecordPromise;
           const source = data.uri;
-          let sourceThumb = await generateThumbnail(source);
+          const sourceThumb = await generateThumbnail(source);
           if (sourceThumb) {
             navigation.navigate("savePost", { source, sourceThumb });
           }

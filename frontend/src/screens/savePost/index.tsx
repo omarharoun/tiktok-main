@@ -11,7 +11,7 @@ import {
 import styles from "./styles";
 import { Feather } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
-import { createPost } from "../../redux/slices/postSlice";
+import { createPost } from "../../redux/slices/postSlicePB";
 
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -36,7 +36,7 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
       createPost({
         description,
         video: route.params.source,
-        thumbnail: route.params.sourceThumb,
+        compressionPreset: "tiktok", // Use TikTok-style compression
       }),
     )
       .then(() => navigation.navigate("feed"))

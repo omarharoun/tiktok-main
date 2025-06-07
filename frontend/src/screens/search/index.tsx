@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchUserItem from "../../components/search/userItem";
-import { queryUsersByEmail } from "../../services/user";
+import { UserService } from "../../services/userPB";
 import styles from "./styles";
 import { SearchUser } from "../../../types";
 
@@ -11,7 +11,9 @@ export default function SearchScreen() {
   const [searchUsers, setSearchUsers] = useState<SearchUser[]>([]);
 
   useEffect(() => {
-    queryUsersByEmail(textInput).then((users) => setSearchUsers(users));
+    UserService.queryUsersByEmail(textInput).then((users) =>
+      setSearchUsers(users),
+    );
   }, [textInput]);
 
   return (
