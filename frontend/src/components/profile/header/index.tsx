@@ -6,7 +6,7 @@ import { RootState } from "../../../redux/store";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../navigation/main";
-import { FIREBASE_AUTH } from "../../../../firebaseConfig";
+import { pb } from "../../../../pocketbaseConfig";
 import { useFollowing } from "../../../hooks/useFollowing";
 import { Feather } from "@expo/vector-icons";
 import { useFollowingMutation } from "../../../hooks/useFollowingMutation";
@@ -37,11 +37,11 @@ export default function ProfileHeader({
   }, [user]);
 
   const followingData = useFollowing(
-    FIREBASE_AUTH.currentUser?.uid ?? null,
-    user?.uid ?? null,
+    pb.authStore.model?.id ?? null,
+    user?.id ?? null,
   );
   const isFollowing =
-    FIREBASE_AUTH.currentUser?.uid && user?.uid && followingData.data
+    pb.authStore.model?.id && user?.id && followingData.data
       ? followingData.data
       : false;
 
@@ -54,8 +54,8 @@ export default function ProfileHeader({
           <TouchableOpacity
             style={buttonStyles.grayOutlinedButton}
             onPress={() => {
-              if (user?.uid) {
-                navigation.navigate("chatSingle", { contactId: user.uid });
+              if (user?.id) {
+                navigation.navigate("chatSingle", { contactId: user.id });
               }
             }}
           >
@@ -64,9 +64,9 @@ export default function ProfileHeader({
           <TouchableOpacity
             style={buttonStyles.grayOutlinedIconButton}
             onPress={() => {
-              if (user?.uid) {
+              if (user?.id) {
                 isFollowingMutation.mutate({
-                  otherUserId: user.uid,
+                  otherUserId: user.id,
                   isFollowing,
                 });
                 setFollowersCount(followersCount - 1);
@@ -82,9 +82,9 @@ export default function ProfileHeader({
         <TouchableOpacity
           style={buttonStyles.filledButton}
           onPress={() => {
-            if (user?.uid) {
+            if (user?.id) {
               isFollowingMutation.mutate({
-                otherUserId: user.uid,
+                otherUserId: user.id,
                 isFollowing,
               });
               setFollowersCount(followersCount + 1);
@@ -100,8 +100,8 @@ export default function ProfileHeader({
   return (
     user && (
       <View style={styles.container}>
-        {user.photoURL ? (
-          <Image style={styles.avatar} source={{ uri: user.photoURL }} />
+        {user.avatar ? (
+          <Image style={styles.avatar} source={{ uri: user.avatar }} />
         ) : (
           <Avatar.Icon size={80} icon={"account"} />
         )}
@@ -120,7 +120,7 @@ export default function ProfileHeader({
             <Text style={styles.counterLabelText}>Likes</Text>
           </View>
         </View>
-        {FIREBASE_AUTH.currentUser?.uid === user.uid ? (
+        {pb.authStore.model?.id === user.id ? (
           <TouchableOpacity
             style={buttonStyles.grayOutlinedButton}
             onPress={() => navigation.navigate("editProfile")}

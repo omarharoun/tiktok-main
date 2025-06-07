@@ -6,8 +6,9 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";
 import { useDispatch } from "react-redux";
-import { deletePost } from "../../../../services/posts"; // Import the deletePost function
-import { FIREBASE_AUTH } from "../../../../../firebaseConfig"; // Import Firebase Auth
+import { PostService } from "../../../../services/postsPB"; // Import the PocketBase PostService
+import { pb } from "../../../../../pocketbaseConfig"; // Import PocketBase client
+import { MediaService } from "../../../../services/mediaPB";
 
 export default function ProfilePostListItem({ item }: { item: Post | null }) {
   const navigation =
@@ -16,9 +17,15 @@ export default function ProfilePostListItem({ item }: { item: Post | null }) {
   const [isOwner, setIsOwner] = useState(false);
   const dispatch = useDispatch();
 
+  // Generate thumbnail URL
+  const thumbnailUrl =
+    item?.media && item.media[1]
+      ? MediaService.getFileUrl(item, item.media[1])
+      : "";
+
   useEffect(() => {
-    const currentUser = FIREBASE_AUTH.currentUser;
-    if (currentUser && item && item.creator === currentUser.uid) {
+    const currentUser = pb.authStore.model;
+    if (currentUser && item && item.creator === currentUser.id) {
       setIsOwner(true);
     }
   }, [item]);
@@ -31,7 +38,7 @@ export default function ProfilePostListItem({ item }: { item: Post | null }) {
 
   const handleDelete = async () => {
     if (item) {
-      await deletePost(item.id); // Call the deletePost function
+      await PostService.deletePost(item.id); // Call the PocketBase PostService deletePost function
       setShowDeleteButton(false);
       // Optionally, you can dispatch an action to update the state
       // dispatch({ type: "DELETE_POST", payload: item.id });
@@ -50,7 +57,7 @@ export default function ProfilePostListItem({ item }: { item: Post | null }) {
         }
         onLongPress={handleLongPress}
       >
-        <Image style={styles.image} source={{ uri: item.media[1] }} />
+        <Image style={styles.image} source={{ uri: thumbnailUrl }} />
         {showDeleteButton && (
           <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
             <Text style={styles.deleteButtonText}>Delete</Text>

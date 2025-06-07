@@ -9,11 +9,7 @@ import {
 import { useSelector } from "react-redux";
 import styles from "./styles";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  addComment,
-  clearCommentListener,
-  commentListener,
-} from "../../../services/posts";
+import { PostService } from "../../../services/postsPB";
 import CommentItem from "./item";
 import { generalStyles } from "../../../styles";
 import { RootState } from "../../../redux/store";
@@ -32,17 +28,20 @@ const CommentModal = ({
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
 
   useEffect(() => {
-    commentListener(post.id, setCommentList);
-    return () => clearCommentListener();
-  }, []);
+    // Fetch comments when modal opens
+    PostService.getComments(post.id).then(setCommentList);
+  }, [post.id]);
 
-  const handleCommentSend = () => {
+  const handleCommentSend = async () => {
     if (comment.length == 0) {
       return;
     }
     setComment("");
     if (currentUser) {
-      addComment(post.id, currentUser.uid, comment);
+      await PostService.addComment(post.id, currentUser.id, comment);
+      // Refresh comments after adding
+      const updatedComments = await PostService.getComments(post.id);
+      setCommentList(updatedComments);
       if (onCommentSend) {
         onCommentSend();
       }
@@ -61,10 +60,10 @@ const CommentModal = ({
         keyExtractor={(item) => item.id}
       />
       <View style={styles.containerInput}>
-        {currentUser && currentUser.photoURL ? (
+        {currentUser && currentUser.avatar ? (
           <Image
             style={generalStyles.avatarSmall}
-            source={{ uri: currentUser.photoURL }}
+            source={{ uri: currentUser.avatar }}
           />
         ) : (
           <Avatar.Icon size={32} icon={"account"} />

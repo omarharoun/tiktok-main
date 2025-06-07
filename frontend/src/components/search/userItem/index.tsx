@@ -15,12 +15,12 @@ export default function SearchUserItem({ item }: { item: SearchUser }) {
     <TouchableOpacity
       style={styles.container}
       onPress={() =>
-        navigation.navigate("profileOther", { initialUserId: item?.uid ?? "" })
+        navigation.navigate("profileOther", { initialUserId: item?.id ?? "" })
       }
     >
       <Text style={styles.text}>{item.displayName || item.email}</Text>
-      {item.photoURL ? (
-        <Image style={styles.image} source={{ uri: item.photoURL }} />
+      {item.avatar ? (
+        <Image style={styles.image} source={{ uri: item.avatar }} />
       ) : (
         <Avatar.Icon size={40} icon={"account"} />
       )}

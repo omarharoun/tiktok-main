@@ -11,10 +11,10 @@ const CommentItem = ({ item }: { item: Comment }) => {
 
   return (
     <View style={styles.container}>
-      {user && user.photoURL ? (
+      {user && user.avatar ? (
         <Image
           style={generalStyles.avatarSmall}
-          source={{ uri: user.photoURL }}
+          source={{ uri: user.avatar }}
         />
       ) : (
         <Avatar.Icon size={32} icon={"account"} />
