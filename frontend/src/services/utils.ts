@@ -1,14 +1,13 @@
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { FIREBASE_STORAGE } from "../../firebaseConfig";
+import { MediaService } from "./mediaPB";
 
-export const saveMediaToStorage = async (media: string, path: string) => {
-  const fileRef = ref(FIREBASE_STORAGE, path);
-
+export const saveMediaToStorage = async (
+  media: string,
+  recordId: string,
+  field: string = "media",
+) => {
   const blob = await uriToBlob(media);
-  await uploadBytesResumable(fileRef, blob);
-
-  const downloadUrl = await getDownloadURL(fileRef);
-  return downloadUrl;
+  // Upload to posts collection by default, can be customized
+  return await MediaService.uploadMedia("posts", recordId, field, blob);
 };
 
 export function uriToBlob(uri: string): Promise<Blob> {
@@ -25,3 +24,6 @@ export function uriToBlob(uri: string): Promise<Blob> {
     xhr.send(null);
   });
 }
+
+// Re-export MediaService for convenience
+export { MediaService };
